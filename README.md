@@ -1,66 +1,49 @@
-## Foundry
+# Staking-Samos Contract Documentation
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Introduction
 
-Foundry consists of:
+This document provides detailed information on how to interact with the Staking-Samos Contract, designed to allow users to stake ETH, receive receipt tokens, and opt-in for auto-compounding with rewards. The Contract is deployed to the Sepolia testnet network.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Contract Overview
 
-## Documentation
+- **Contract Name:** StakingSamos
+- **Token Name:** samsonajulorToken
+- **Receipt Token Name:** samsonajulor-WETH
+- **Annualized APR:** 14%
+- **Conversion Ratio:** 1 ETH -> 10 Receipt Tokens
+- **Auto-Compounding Fee:** 1% of WETH per month
 
-https://book.getfoundry.sh/
+### Interacting with the Contract
 
-## Usage
+1. **Deposit ETH:**
+   - Function: `deposit()`
+   - Description: Deposit ETH to receive receipt tokens. The ETH is converted to WETH.
+   - Example: `deposit({ value: amountInWei })`
 
-### Build
+2. **Opt-in for Auto-Compounding:**
+   - Function: `optInAutoCompounding()`
+   - Description: Opt-in for auto-compounding by paying a 1% fee. Auto-compounding will convert and stake your receipt tokens.
+   - Example: `optInAutoCompounding()`
 
-```shell
-$ forge build
-```
+3. **Withdraw Staked Tokens:**
+   - Function: `withdraw(uint256 amount)`
+   - Description: Withdraw your staked tokens.
+   - Example: `withdraw(amountInReceiptTokens)`
 
-### Test
+4. **Trigger Auto-Compounding:**
+   - Function: `triggerAutoCompounding()`
+   - Description: Anyone can trigger auto-compounding, receiving rewards from the accumulated fees.
+   - Example: `triggerAutoCompounding()`
 
-```shell
-$ forge test
-```
+## Fees
 
-### Format
+- **Auto-Compounding Fee:** 1% of your WETH balance per month when opting in for auto-compounding.
 
-```shell
-$ forge fmt
-```
+## Events
 
-### Gas Snapshots
+The Staking-Samos Contract emits events to track various actions:
 
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+1. `Deposited(address indexed user, uint256 wethAmount, uint256 receiptTokens)` - Triggered when a user deposits ETH.
+2. `AutoCompoundingOptIn(address indexed user, uint256 fee)` - Triggered when a user opts-in for auto-compounding.
+3. `Withdrawn(address indexed user, uint256 amount)` - Triggered when a user withdraws staked tokens.
+4. `AutoCompoundingTriggered(address indexed triggerer, uint256 reward)` - Triggered when someone triggers auto-compounding and receives a reward.
