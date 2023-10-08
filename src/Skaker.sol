@@ -112,9 +112,6 @@ contract StakingSamos {
         if (currentUser.receiptTokenBalance <= 0) {
             revert NoReceiptTokensToCompound();
         }
-        if (block.timestamp < currentUser.lastAutoCompoundingTimestamp + autoCompoundingInterval) {
-            revert AutoCompoundingNotDueYet();
-        }
 
         currentUser.optedInForAutoCompounding = true;
         currentUser.lastAutoCompoundingTimestamp = block.timestamp;

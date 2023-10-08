@@ -1,49 +1,84 @@
-# Staking-Samos Contract Documentation
+# StakingSamos Contract Documentation
 
-## Introduction
+**License**: MIT License
 
-This document provides detailed information on how to interact with the Staking-Samos Contract, designed to allow users to stake ETH, receive receipt tokens, and opt-in for auto-compounding with rewards. The Contract is deployed to the Sepolia testnet network.
+**Solidity Version**: ^0.8.0
 
-### Contract Overview
+## Overview
 
-- **Contract Name:** StakingSamos
-- **Token Name:** samsonajulorToken
-- **Receipt Token Name:** samsonajulor-WETH
-- **Annualized APR:** 14%
-- **Conversion Ratio:** 1 ETH -> 10 Receipt Tokens
-- **Auto-Compounding Fee:** 1% of WETH per month
+The `StakingSamos` contract is designed for staking Ether (ETH) to earn receipt tokens with a specified annual APR and auto-compounding feature. Users can deposit ETH, opt-in for auto-compounding, and withdraw their staked ETH.
 
-### Interacting with the Contract
+## Contract Details
 
-1. **Deposit ETH:**
-   - Function: `deposit()`
-   - Description: Deposit ETH to receive receipt tokens. The ETH is converted to WETH.
-   - Example: `deposit({ value: amountInWei })`
+- **Owner**: The owner of the contract has special privileges, such as triggering auto-compounding.
 
-2. **Opt-in for Auto-Compounding:**
-   - Function: `optInAutoCompounding()`
-   - Description: Opt-in for auto-compounding by paying a 1% fee. Auto-compounding will convert and stake your receipt tokens.
-   - Example: `optInAutoCompounding()`
+- **WETH Token Address**: The address of the Wrapped Ether (WETH) token contract.
 
-3. **Withdraw Staked Tokens:**
-   - Function: `withdraw(uint256 amount)`
-   - Description: Withdraw your staked tokens.
-   - Example: `withdraw(amountInReceiptTokens)`
+- **Receipt Token**: An instance of the `ReceiptToken` contract used to mint receipt tokens.
 
-4. **Trigger Auto-Compounding:**
-   - Function: `triggerAutoCompounding()`
-   - Description: Anyone can trigger auto-compounding, receiving rewards from the accumulated fees.
-   - Example: `triggerAutoCompounding()`
+- **Annual APR**: The annual interest rate (APR) in percentage (e.g., 14%).
 
-## Fees
+- **Auto-compounding Fee Percentage**: The fee percentage charged for auto-compounding (e.g., 1%).
 
-- **Auto-Compounding Fee:** 1% of your WETH balance per month when opting in for auto-compounding.
+- **Auto-compounding Interval**: The time interval for auto-compounding (default is 30 days).
+
+- **Precision**: Precision factor used in calculations.
+
+## Structs
+
+### User
+
+- **addr**: Ethereum address of the user.
+- **wethBalance**: User's WETH balance in the contract.
+- **receiptTokenBalance**: User's receipt token balance in the contract.
+- **optedInForAutoCompounding**: Indicates whether the user has opted in for auto-compounding.
+- **lastAutoCompoundingTimestamp**: Timestamp of the last auto-compounding action.
+- **isActive**: Indicates whether the user's account is active.
+
+## Functions
+
+### `constructor(address _wethTokenAddress)`
+
+- Initializes the contract with the owner and WETH token address.
+- Sets the default auto-compounding interval to 30 days.
+
+### `deposit()`
+
+- Allows users to deposit ETH and receive receipt tokens.
+- Converts ETH to WETH.
+- Calculates receipt tokens based on the annual APR.
+- Updates user's balances and mints receipt tokens.
+
+### `optInAutoCompounding()`
+
+- Allows users to opt-in for auto-compounding.
+- Checks if the user is active, hasn't already opted in, and has receipt tokens.
+- Sets the user's opt-in status and updates the timestamp.
+
+### `autoCompound(address addr)`
+
+- Allows the owner to trigger auto-compounding for a specific user.
+- Checks if the user is active, has opted in, and if the auto-compounding interval has passed.
+- Charges a fee and converts receipt tokens to WETH.
+
+### `withdrawWeth(uint256 amount)`
+
+- Allows users to withdraw WETH from their balance in the contract.
+- Checks if the user is active, has a positive amount to withdraw, and sufficient balance.
+- Transfers the WETH to the user.
 
 ## Events
 
-The Staking-Samos Contract emits events to track various actions:
+- `Deposited(address indexed user, uint256 wethAmount, uint256 receiptTokens)`: Emitted when a user deposits ETH.
+- `AutoCompoundingOptIn(address indexed user)`: Emitted when a user opts in for auto-compounding.
+- `AutoCompound(address indexed user, uint256 wethAmount, uint256 receiptTokens)`: Emitted when auto-compounding is triggered.
+- `Withdrawn(address indexed user, uint256 amount)`: Emitted when a user withdraws WETH.
 
-1. `Deposited(address indexed user, uint256 wethAmount, uint256 receiptTokens)` - Triggered when a user deposits ETH.
-2. `AutoCompoundingOptIn(address indexed user, uint256 fee)` - Triggered when a user opts-in for auto-compounding.
-3. `Withdrawn(address indexed user, uint256 amount)` - Triggered when a user withdraws staked tokens.
-4. `AutoCompoundingTriggered(address indexed triggerer, uint256 reward)` - Triggered when someone triggers auto-compounding and receives a reward.
+## Modifiers
+
+- `onlyOwner()`: Ensures that only the contract owner can call certain functions.
+
+## Errors
+
+- Various custom error messages are defined for different failure conditions.
+

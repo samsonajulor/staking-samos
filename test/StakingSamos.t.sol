@@ -79,38 +79,11 @@ contract TestStakingSamos is Test {
         assertEq(stakingSamosContract.receiptToken().balanceOf(_johnDoe), _getRewardForDeposit(1 ether));
     }
 
-    // Opt-In Auto-Compounding Test
     function testOptInAutoCompounding() public {
-        // Deposit ETH to the contract
-        // Call the optInAutoCompounding function
-        // Verify that the user's optedInForAutoCompounding flag is set to true
-        // Verify that the user's lastAutoCompoundingTimestamp is updated
-        // Verify that the AutoCompoundingOptIn event is emitted with the correct user address
-    }
+        stakingSamosContract.deposit{value: 1 ether}();
+        stakingSamosContract.optInAutoCompounding();
+        (,,, bool optedInForAutoCompounding,,) = stakingSamosContract.users(_johnDoe);
 
-    // Auto-Compound Test (Owner)
-    function testAutoCompoundByOwner() public {
-        // Deposit ETH and opt-in for auto-compounding
-        // Execute the autoCompound function by the owner
-        // Verify that the user's WETH balance is reduced by the auto-compounding fee
-        // Verify that the total auto-compounding fee is updated correctly
-        // Verify that receipt tokens are converted into WETH
-        // Verify that the user's lastAutoCompoundingTimestamp is updated
-        // Verify that the AutoCompound event is emitted with the correct values
-    }
-
-    // Withdraw WETH Test
-    function testWithdrawWETH() public {
-        // Deposit ETH to the contract
-        // Withdraw a specific amount of WETH
-        // Verify that the user's WETH balance is updated correctly
-        // Verify that the WETH has been transferred to the user
-        // Verify that the Withdrawn event is emitted with the correct values
-    }
-
-    // Error Cases Testing
-    function testErrorCases() public {
-        // Test various error cases and ensure that the contract handles them correctly
-        // Include steps for each error case mentioned in the outline
+        assertEq(optedInForAutoCompounding, true);
     }
 }
